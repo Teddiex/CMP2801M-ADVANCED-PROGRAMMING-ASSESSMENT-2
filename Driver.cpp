@@ -21,106 +21,111 @@ int main()
 	vector <string> parameters; // this one will hold parameters for the commands
 
 
-	while (userCommand.compare("exit") != 0)
+while (userCommand.compare("exit") != 0)
+{
+	cout << "Enter the command: ";
+
+	getline(cin, userCommand);
+
+	char* cstr = new char[userCommand.length() + 1];
+
+	strcpy_s(cstr, userCommand.length() + 1, userCommand.c_str());
+
+	// implement a string tokenizer to populate the parameters vector 
+	char* nextToken;
+	char* token = strtok_s(cstr, " ", &nextToken);
+	while (token != 0)
 	{
-		cout << "Enter the command: ";
+		parameters.push_back(token);
+		token = strtok_s(0, " ", &nextToken);
+	}
 
-		getline(cin, userCommand);
+	// as a result of the process, parameters[0] should hold your command, followed by your parameters 
+	string command = parameters[0];
 
-		char* cstr = new char[userCommand.length() + 1];
 
-		strcpy_s(cstr, userCommand.length() + 1, userCommand.c_str());
 
-		// implement a string tokenizer to populate the parameters vector 
-		char* nextToken;
-		char* token = strtok_s(cstr, " ", &nextToken);
-		while (token != 0)
-		{
-			parameters.push_back(token);
-			token = strtok_s(0, " ", &nextToken);
+	try
+	{
+		if (command.compare("addR") == 0) {
+			if (parameters.size() == 5)
+			{
+
+				int x = stoi(parameters[1].c_str());
+				int y = stoi(parameters[2].c_str());
+				if (stoi(parameters[3].c_str()) <= 0 || stoi(parameters[4].c_str()) <= 0)
+				{
+					throw getError("Invalid parameter given");
+				}
+				int h = stoi(parameters[3].c_str());
+				int w = stoi(parameters[4].c_str());
+
+
+				Rectangle* rectangle = new Rectangle(x, y, h, w);
+				shapes.push_back(rectangle);
+				cout << rectangle;
+			}
+			else
+			{
+				throw getError("Enter the correct number of parameters");
+			}
+		}
+		else if (command.compare("addS") == 0) {
+			if (parameters.size() == 4)
+			{
+				// get parameters
+				int x = stoi(parameters[1].c_str());
+				int y = stoi(parameters[2].c_str());
+				if (stoi(parameters[3].c_str()) <= 0)
+				{
+					throw getError("Edge size must be greater than 0");
+				}
+				int edge = stoi(parameters[3].c_str());
+				Square* square = new Square(x, y, edge);
+				shapes.push_back(square);
+				cout << square;
+			}
+			else
+			{
+				throw getError("Enter the correct parameters");
+			}
 		}
 
-		// as a result of the process, parameters[0] should hold your command, followed by your parameters 
-		string command = parameters[0];
-
-
-
-		try
-		{
-			if (command.compare("addR") == 0) {
-				if (parameters.size() == 5)
-				{
-				
-					int x = stoi(parameters[1].c_str());
-					int y = stoi(parameters[2].c_str());
-					if (stoi(parameters[3].c_str()) <= 0 || stoi(parameters[4].c_str()) <= 0)
-					{
-						throw getError("Invalid parameter given");
-					}
-					int h = stoi(parameters[3].c_str());
-					int w = stoi(parameters[4].c_str());
-
-
-					Rectangle* rectangle = new Rectangle(x, y, h, w);
-					shapes.push_back(rectangle);
-					cout << rectangle; 
-				}
-				else
-				{
-					throw getError("Enter the correct number of parameters");
-				}
-			}
-			else if (command.compare("addS") == 0) {
-				if (parameters.size() == 4)
-				{
-					// get parameters
-					int x = stoi(parameters[1].c_str());
-					int y = stoi(parameters[2].c_str());
-					if (stoi(parameters[3].c_str()) <= 0)
-					{
-						throw getError("Edge size must be greater than 0");
-					}
-					int edge = stoi(parameters[3].c_str());
-					Square* square = new Square(x, y, edge);
-					shapes.push_back(square);
-					cout << square;
-				}
-				else
-				{
-					throw getError("Enter the correct parameters");
-				}
-			}
-
-			else if (command.compare("addC") == 0) {
-				// get parameters
-				if (parameters.size() == 4)
-				{
-					int x = stoi(parameters[1].c_str()); 
-					int y = stoi(parameters[2].c_str());
-
-					if (stoi(parameters[3].c_str()) <= 0)
-					{
-						throw getError("Radius cannot be less than 0");
-					}
-
-
-					int r = stoi(parameters[3].c_str());
-					// ...
-					Circle* circle = new Circle(x, y, r);
-					shapes.push_back(circle);
-					cout << circle;
-				}
-				else
-				{
-					throw getError("Enter the correct parameters");
-				}
-			}
-			else if (command.compare("scale") == 0) 
+		else if (command.compare("addC") == 0) {
+			// get parameters
+			if (parameters.size() == 4)
 			{
-				if (parameters.size() != 4) 
+				int x = stoi(parameters[1].c_str());
+				int y = stoi(parameters[2].c_str());
+
+				if (stoi(parameters[3].c_str()) <= 0)
 				{
-					throw getError("Invalid number of parameters");
+					throw getError("Radius cannot be less than 0");
 				}
+
+
+				int r = stoi(parameters[3].c_str());
+				// ...
+				Circle* circle = new Circle(x, y, r);
+				shapes.push_back(circle);
+				cout << circle;
+			}
+			else
+			{
+				throw getError("Enter the correct parameters");
+			}
+		}
+		else if (command.compare("scale") == 0)
+		{
+			if (parameters.size() != 4)
+			{
+				throw getError("Invalid number of parameters");
+			}
+			if ((stoi(parameters[1]) < shapes.size() && stoi(parameters[1]) <= 0) || stoi(parameters[1]) > shapes.size())
+			{
+				throw getError("Invalid Shape number");
+			}
+
 				// forgot that stoi is string to int, thus I was losing data when trying to scale by a decimal value, changed to stof
 				int position = stoi(parameters[1]) - 1;
 				float xScale = stof(parameters[2].c_str());
